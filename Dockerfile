@@ -1,8 +1,14 @@
-FROM python:3
+FROM ubuntu:xenial
 
-WORKDIR /opt/cobra
+COPY cobra/. /code/
+WORKDIR /code
 
-COPY cobra/* /opt/cobra/
-RUN pip install --no-cache-dir -r requirements.txt 
+RUN apt-get update && apt-get install -y python-pip curl git \
+    && apt-get autoremove \
+    && apt-get clean \
+    && apt-get autoclean \
+    && pip install -r requirements.txt \
+    && cp config.template config
 
-CMD ["python", "cobra.py", "-t $CODE_DIR"]
+EXPOSE 5000
+CMD ["python", "cobra.py", "-H", "0.0.0.0", "-P", "5000"]
